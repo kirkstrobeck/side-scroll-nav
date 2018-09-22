@@ -1,14 +1,18 @@
 port module Main exposing (main)
 
+-- import Dom exposing (..)
+
 import Array exposing (..)
 import Css exposing (..)
+import Debug exposing (log)
+import Dom.Scroll exposing (toTop)
 import Html
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css, href, src)
+import Html.Styled.Attributes exposing (class, css, href, src)
 import Html.Styled.Events exposing (onClick)
 
 
-main : Program Model Model Update
+main : Program Model Model Msg
 main =
     Html.programWithFlags
         { init = init
@@ -25,16 +29,25 @@ type alias Nav =
 
 
 type alias Model =
-    { contents : List Nav }
+    { contents : List Nav
+    , wrapperClassNames : String
+    }
 
 
-init : Model -> ( Model, Cmd Update )
+init : Model -> ( Model, Cmd Msg )
 init state =
     ( state, Cmd.none )
 
 
-type Update
-    = Update Model
+type alias ElmToReactMsg =
+    { command : String
+    , payload : String
+    }
+
+
+type Msg
+    = ReactUpdate Model
+    | Foo ElmToReactMsg
 
 
 theme :
@@ -51,40 +64,57 @@ theme =
 
 update msg model =
     case msg of
-        Update state ->
-            ( state, Cmd.none )
+        ReactUpdate model ->
+            ( model, Cmd.none )
+
+        Foo obj ->
+            ( model, elmToReact obj )
 
 
-port state : (Model -> action) -> Sub action
+port reactToElm : (Model -> action) -> Sub action
 
 
-subscriptions : Model -> Sub Update
+port elmToReact : ElmToReactMsg -> Cmd a
+
+
+subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch
-        [ state Update ]
+    reactToElm ReactUpdate
 
 
-view : Model -> Html Update
-view { contents } =
+view : Model -> Html Msg
+view { contents, wrapperClassNames } =
     div
         [ css
-            [ height (px 50)
+            [ height (px 60)
             , position fixed
+            , top (px 0)
             , width (pct 100)
-            , displayFlex
-            , alignItems center
-            , backgroundColor theme.grey
-            , overflowX scroll
-            , property
-                "-webkit-overflow-scrolling"
-                "touch"
+            , before
+                [ property "content" "''"
+                , height (px 50)
+                , backgroundColor theme.grey
+                , display block
+                , width (pct 100)
+                , position absolute
+                , top (px 0)
+                , zIndex (int -1)
+                ]
             ]
         ]
-        div
-        []
-        [ [ ul
+        [ div
+            [ class wrapperClassNames
+            , css
+                [ overflowX scroll
+                , height (px 60)
+                , property
+                    "-webkit-overflow-scrolling"
+                    "touch"
+                ]
+            ]
+            [ ul
                 [ css
-                    [ margin (px 0)
+                    [ margin4 (px 5) (px 0) (px 0) (px 0)
                     , padding (px 0)
                     , listStyleType none
                     , display inlineBlock
@@ -98,24 +128,36 @@ view { contents } =
                     (\item ->
                         li
                             [ css
-                                [ backgroundColor theme.white
-                                , margin (px 0)
-                                , padding2 (px 0) (px 20)
-                                , lineHeight (px 40)
+                                [ margin (px 0)
                                 , display inlineBlock
-                                , whiteSpace noWrap
-                                , maxWidth (px 150)
-                                , flex none
-                                , borderRadius (px 40)
-                                , height (px 40)
-                                , overflow hidden
-                                , textOverflow ellipsis
                                 , marginLeft (px 5)
+                                , firstChild
+                                    [ marginLeft (px 0) ]
                                 ]
                             ]
-                            [ text item.title ]
+                            [ a
+                                [ css
+                                    [ padding2 (px 0) (px 20)
+                                    , cursor pointer
+                                    , property "user-select" "none"
+                                    , whiteSpace noWrap
+                                    , borderRadius (px 40)
+                                    , height (px 40)
+                                    , overflow hidden
+                                    , display block
+                                    , textOverflow ellipsis
+                                    , backgroundColor theme.white
+                                    , maxWidth (px 150)
+                                    ]
+                                , onClick
+                                    (Foo
+                                        (ElmToReactMsg "scrollTo" item.anchor)
+                                    )
+                                ]
+                                [ text item.title ]
+                            ]
                     )
                     contents
                 )
-          ]
+            ]
         ]

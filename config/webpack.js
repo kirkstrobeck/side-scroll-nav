@@ -17,8 +17,6 @@ const isProd = process.env.NODE_ENV === PRODUCTION
 
 const distDir = fromRoot('dist')
 
-console.log(fromRoot())
-
 const common = {
   mode: isProd ? 'production' : 'development',
   entry: fromRoot('src/index.jsx'),

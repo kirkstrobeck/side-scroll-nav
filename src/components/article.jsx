@@ -3,8 +3,7 @@ import Waypoint from 'react-waypoint'
 
 export default ({ id, title, nav }) => (
   <Fragment>
-    {/* <Waypoint onPositionChange={nav.handleWaypoint} /> */}
-    <Waypoint onPositionChange={() => {}} />
+    <Waypoint onPositionChange={nav.handleWaypoint} />
     <div id={id}>
       <h1>{title}</h1>
       <div style={{ height: 300, background: 'red', margin: '20px 0' }} />
