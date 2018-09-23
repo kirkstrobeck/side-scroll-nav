@@ -2,67 +2,53 @@ import { css } from 'emotion'
 import React, { Component, Fragment } from 'react'
 
 import Article from './article'
-import { SideScrollNav, createFactory } from './side-scroll-nav'
+import { SideScrollNav, createStore } from './side-scroll-nav'
 
-const navFactory = createFactory()
-const { create } = navFactory
+const navStore = createStore()
+const { handleWaypoint } = navStore
 
 const contents = [
   {
     title: 'Subject One',
-    anchor: 'subjectOne',
-    nav: create('subjectOne')
+    id: 'subjectOne'
   },
   {
     title: 'Subject Two',
-    anchor: 'subjectTwo',
-    nav: create('subjectTwo')
+    id: 'subjectTwo'
   },
   {
     title: 'Subject Three',
-    anchor: 'subjectThree',
-    nav: create('subjectThree')
+    id: 'subjectThree'
   },
   {
     title: 'Subject Four',
-    anchor: 'subjectFour',
-    nav: create('subjectFour')
+    id: 'subjectFour'
   },
   {
     title: 'Subject Five',
-    anchor: 'subjectFive',
-    nav: create('subjectFive')
+    id: 'subjectFive'
   },
   {
     title: 'Subject Six',
-    anchor: 'subjectSix',
-    nav: create('subjectSix')
+    id: 'subjectSix'
   },
   {
     title: 'Subject Seven',
-    anchor: 'subjectSeven',
-    nav: create('subjectSeven')
+    id: 'subjectSeven'
   },
   {
     title: 'Subject Eight',
-    anchor: 'subjectEight',
-    nav: create('subjectEight')
+    id: 'subjectEight'
   },
   {
     title: 'Subject Nine',
-    anchor: 'subjectNine',
-    nav: create('subjectNine')
+    id: 'subjectNine'
   },
   {
     title: 'Subject Ten',
-    anchor: 'subjectTen',
-    nav: create('subjectTen')
+    id: 'subjectTen'
   }
 ]
-
-const foo = css`
-  padding: 0 calc(8.3335% + 0.4rem);
-`
 
 export default class App extends Component {
   // state = {
@@ -82,16 +68,24 @@ export default class App extends Component {
     return (
       <Fragment>
         <SideScrollNav
+          handleWaypoint={handleWaypoint}
           contents={contents}
           scrollTopOffset={-65}
-          wrapperClassNames={foo}
-          scrollClassName={foo}
+          wrapperId={'side-scroll-nav'}
+          containerClassName={css`
+            padding: 0 calc(8.3335% + 0.4rem);
+          `}
         />
-        <div style={{ marginTop: 65 }} className='container'>
-          <div className='columns'>
-            <div className='column col-10 col-mx-auto'>
-              {contents.map(content => (
-                <Article key={content.title} {...content} />
+        <div style={{ marginTop: 65 }} className="container">
+          <div className="columns">
+            <div className="column col-10 col-mx-auto">
+              {contents.map(({ title, id }) => (
+                <Article
+                  key={title}
+                  id={id}
+                  title={title}
+                  handleWaypoint={handleWaypoint(id)}
+                />
               ))}
             </div>
           </div>

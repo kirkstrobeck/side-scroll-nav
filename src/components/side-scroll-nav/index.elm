@@ -6,7 +6,7 @@ import Css exposing (..)
 import Dom.Scroll exposing (toTop)
 import Html exposing (programWithFlags)
 import Html.Styled exposing (Html, a, div, li, text, toUnstyled, ul)
-import Html.Styled.Attributes exposing (attribute, class, css, href, src)
+import Html.Styled.Attributes exposing (attribute, class, css, href, id, src)
 import Html.Styled.Events exposing (onClick)
 
 
@@ -22,13 +22,14 @@ main =
 
 type alias Nav =
     { title : String
-    , anchor : String
+    , id : String
     }
 
 
 type alias Model =
     { contents : List Nav
-    , wrapperClassNames : String
+    , containerClassName : String
+    , wrapperId : String
     }
 
 
@@ -81,7 +82,7 @@ subscriptions model =
 
 
 view : Model -> Html Msg
-view { contents, wrapperClassNames } =
+view { contents, containerClassName, wrapperId } =
     div
         [ css
             [ height (px 60)
@@ -102,9 +103,16 @@ view { contents, wrapperClassNames } =
                 , zIndex (int -1)
                 ]
             ]
+        , id wrapperId
         ]
         [ div
-            [ class wrapperClassNames
+            [ class containerClassName
+            , attribute "data-anchor" ""
+            ]
+            [ div [] [] ]
+        , div
+            [ class containerClassName
+            , attribute "data-scroller" ""
             , css
                 [ overflowX scroll
                 , height (px 60)
@@ -135,7 +143,7 @@ view { contents, wrapperClassNames } =
                                 , firstChild
                                     [ marginLeft (px 0) ]
                                 ]
-                            , attribute "data-anchor" item.anchor
+                            , attribute "data-id" item.id
                             ]
                             [ a
                                 [ css
@@ -153,7 +161,7 @@ view { contents, wrapperClassNames } =
                                     ]
                                 , onClick
                                     (Foo
-                                        (ElmToReactMsg "scrollTo" item.anchor)
+                                        (ElmToReactMsg "scrollTo" item.id)
                                     )
                                 ]
                                 [ text item.title ]
