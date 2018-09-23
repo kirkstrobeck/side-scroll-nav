@@ -82,13 +82,14 @@ export default class App extends Component {
     return (
       <Fragment>
         <SideScrollNav
-          wrapperClassNames={foo}
           contents={contents}
           scrollTopOffset={-65}
+          wrapperClassNames={foo}
+          scrollClassName={foo}
         />
-        <div style={{ marginTop: 65 }} className="container">
-          <div className="columns">
-            <div className="column col-10 col-mx-auto">
+        <div style={{ marginTop: 65 }} className='container'>
+          <div className='columns'>
+            <div className='column col-10 col-mx-auto'>
               {contents.map(content => (
                 <Article key={content.title} {...content} />
               ))}

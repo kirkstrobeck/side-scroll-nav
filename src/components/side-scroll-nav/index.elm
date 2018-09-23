@@ -2,13 +2,11 @@ port module Main exposing (main)
 
 -- import Dom exposing (..)
 
-import Array exposing (..)
 import Css exposing (..)
-import Debug exposing (log)
 import Dom.Scroll exposing (toTop)
-import Html
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (class, css, href, src)
+import Html exposing (programWithFlags)
+import Html.Styled exposing (Html, a, div, li, text, toUnstyled, ul)
+import Html.Styled.Attributes exposing (attribute, class, css, href, src)
 import Html.Styled.Events exposing (onClick)
 
 
@@ -90,6 +88,8 @@ view { contents, wrapperClassNames } =
             , position fixed
             , top (px 0)
             , width (pct 100)
+            , property "backface-visibility" "hidden"
+            , transform (translate3d zero zero zero)
             , before
                 [ property "content" "''"
                 , height (px 50)
@@ -134,6 +134,7 @@ view { contents, wrapperClassNames } =
                                 , firstChild
                                     [ marginLeft (px 0) ]
                                 ]
+                            , attribute "data-anchor" item.anchor
                             ]
                             [ a
                                 [ css

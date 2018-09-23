@@ -1,38 +1,57 @@
-import React from 'react'
+import React, { Component } from 'react'
 
 import { Main } from './index.elm'
 import ElmWrapper from '../helpers/elm-wrapper'
 
-export function SideScrollNav ({ scrollTopOffset, ...restProps }) {
-  return (
-    <ElmWrapper
-      src={Main}
-      listeners={{
-        scrollTo: value => {
-          const {
-            nav: { getTop }
-          } = restProps.contents.find(({ anchor }) => anchor === value)
-          console.log(
-            'anchor',
-            restProps.contents.find(({ anchor }) => anchor === value),
-            getTop() + scrollTopOffset
-          )
-          window.scrollTo({
-            top: getTop() + scrollTopOffset,
-            left: 0,
-            behavior: 'smooth'
-          })
-        }
-      }}
-      props={restProps}
-    />
-  )
+function scrollToWithDefaults ({ element = window, top = 0, left = 0 }) {
+  element.scrollTo({
+    top,
+    left,
+    behavior: 'smooth'
+  })
+}
+
+export class SideScrollNav extends Component {
+  componentDidMount () {
+    window.setTimeout(() => {
+      this.scrollLeftBase = document.querySelector(
+        `[data-anchor="${this.props.contents[0].anchor}"]`
+      ).offsetLeft
+    }, 0)
+  }
+
+  render () {
+    const { contents, scrollTopOffset, scrollClassName } = this.props
+    return (
+      <ElmWrapper
+        src={Main}
+        listeners={{
+          scrollTo: value => {
+            const {
+              anchor,
+              nav: { getTop }
+            } = contents.find(({ anchor }) => anchor === value)
+
+            scrollToWithDefaults({ top: getTop() + scrollTopOffset })
+
+            scrollToWithDefaults({
+              element: document.querySelector(`.${scrollClassName}`),
+              left:
+                document.querySelector(`[data-anchor="${anchor}"]`).offsetLeft -
+                this.scrollLeftBase
+            })
+          }
+        }}
+        props={this.props}
+      />
+    )
+  }
 }
 
 export function createFactory () {
   let initScrollY
 
-  // needs timeout to move to bottom of the callstack otherwise it will be zero
+  // timeout needed to move to callstack bottom otherwise it will be zero
   setTimeout(() => {
     initScrollY = window.scrollY
   }, 0)
@@ -47,6 +66,10 @@ export function createFactory () {
           // waypoints are measured based on current scroll position
           // this math resets the waypoint top to the page top
           initTop = event.waypointTop + initScrollY
+        }
+
+        if (event.currentPosition === 'inside') {
+          console.log(id, 'is current')
         }
       }
 
