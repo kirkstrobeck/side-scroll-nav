@@ -88,8 +88,9 @@ view { contents, wrapperClassNames } =
             , position fixed
             , top (px 0)
             , width (pct 100)
-            , property "backface-visibility" "hidden"
-            , transform (translate3d zero zero zero)
+
+            -- , property "backface-visibility" "hidden"
+            -- , transform (translate3d zero zero zero)
             , before
                 [ property "content" "''"
                 , height (px 50)
