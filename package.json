@@ -27,6 +27,7 @@
     "html-webpack-plugin": "^3.2.0",
     "http-server": "^0.11.1",
     "nodemon": "^1.18.4",
+    "prop-types": "^15.6.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-elm-components": "^1.0.2",

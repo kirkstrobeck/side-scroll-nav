@@ -3,11 +3,14 @@ port module Main exposing (main)
 -- import Dom exposing (..)
 
 import Css exposing (..)
+import Css.Global exposing (withClass)
+import Debug exposing (log)
 import Dom.Scroll exposing (toTop)
 import Html exposing (programWithFlags)
 import Html.Styled exposing (Html, a, div, li, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (attribute, class, css, href, id, src)
 import Html.Styled.Events exposing (onClick)
+import Maybe exposing (withDefault)
 
 
 main : Program Model Model Msg
@@ -26,6 +29,12 @@ type alias Nav =
     }
 
 
+
+-- type Foo value
+--     = Just value
+--     | Nothing
+
+
 type alias Model =
     { contents : List Nav
     , containerClassName : String
@@ -34,8 +43,8 @@ type alias Model =
 
 
 init : Model -> ( Model, Cmd Msg )
-init state =
-    ( state, Cmd.none )
+init reactProps =
+    ( reactProps, Cmd.none )
 
 
 type alias ElmToReactMsg =
@@ -49,15 +58,11 @@ type Msg
     | Foo ElmToReactMsg
 
 
-theme :
-    { grey : Color
-    , white : Color
-    , red : Color
-    }
 theme =
     { grey = hex "f5f5f5"
     , white = hex "ffffff"
     , red = hex "ff0000"
+    , blue = hex "0000ff"
     }
 
 
@@ -137,9 +142,8 @@ view { contents, containerClassName, wrapperId } =
                     (\item ->
                         li
                             [ css
-                                [ margin (px 0)
+                                [ margin4 (px 0) (px 0) (px 0) (px 25)
                                 , display inlineBlock
-                                , marginLeft (px 5)
                                 , firstChild
                                     [ marginLeft (px 0) ]
                                 ]
@@ -147,22 +151,45 @@ view { contents, containerClassName, wrapperId } =
                             ]
                             [ a
                                 [ css
-                                    [ padding2 (px 0) (px 20)
-                                    , cursor pointer
+                                    [ cursor pointer
                                     , property "user-select" "none"
                                     , whiteSpace noWrap
-                                    , borderRadius (px 40)
                                     , height (px 40)
                                     , overflow hidden
                                     , display block
                                     , textOverflow ellipsis
-                                    , backgroundColor theme.white
                                     , maxWidth (px 150)
+                                    , position relative
+                                    , hover
+                                        [ textDecoration none
+                                        , before
+                                            [ property "content" "''"
+                                            , height (px 3)
+                                            , width (pct 100)
+                                            , display block
+                                            , bottom (px 5)
+                                            , position absolute
+                                            , backgroundColor theme.blue
+                                            ]
+                                        ]
+                                    , withClass "active"
+                                        [ textDecoration none
+                                        , before
+                                            [ property "content" "''"
+                                            , height (px 3)
+                                            , width (pct 100)
+                                            , display block
+                                            , bottom (px 5)
+                                            , position absolute
+                                            , backgroundColor theme.blue
+                                            ]
+                                        ]
                                     ]
                                 , onClick
                                     (Foo
                                         (ElmToReactMsg "scrollTo" item.id)
                                     )
+                                , class "active"
                                 ]
                                 [ text item.title ]
                             ]

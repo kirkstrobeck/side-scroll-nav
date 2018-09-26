@@ -1,10 +1,10 @@
 import { css } from 'emotion'
-import React, { Component, Fragment } from 'react'
+import React, { Fragment } from 'react'
 
 import Article from './article'
-import { SideScrollNav, createStore } from './side-scroll-nav'
+import { SideScrollNav, storeFactory } from './side-scroll-nav'
 
-const navStore = createStore()
+const navStore = storeFactory()
 const { handleWaypoint } = navStore
 
 const contents = [
@@ -50,47 +50,31 @@ const contents = [
   }
 ]
 
-export default class App extends Component {
-  // state = {
-  //   title: 'Start!',
-  //   seconds: 0
-  // }
-
-  // componentDidMount () {
-  //   window.setInterval(() => {
-  //     contents[0].title =
-  //       contents[0].title === 'Subject One' ? 'Subject 1' : 'Subject One'
-  //     this.setState({ contents })
-  //   }, 1000)
-  // }
-
-  render () {
-    return (
-      <Fragment>
-        <SideScrollNav
-          handleWaypoint={handleWaypoint}
-          contents={contents}
-          scrollTopOffset={-65}
-          wrapperId={'side-scroll-nav'}
-          containerClassName={css`
-            padding: 0 calc(8.3335% + 0.4rem);
-          `}
-        />
-        <div style={{ marginTop: 65 }} className="container">
-          <div className="columns">
-            <div className="column col-10 col-mx-auto">
-              {contents.map(({ title, id }) => (
-                <Article
-                  key={title}
-                  id={id}
-                  title={title}
-                  handleWaypoint={handleWaypoint(id)}
-                />
-              ))}
-            </div>
+export default function App () {
+  return (
+    <Fragment>
+      <SideScrollNav
+        store={navStore}
+        contents={contents}
+        scrollTopOffset={-65}
+        containerClassName={css`
+          padding: 0 calc(8.3335% + 0.4rem);
+        `}
+      />
+      <div style={{ marginTop: 65 }} className='container'>
+        <div className='columns'>
+          <div className='column col-10 col-mx-auto'>
+            {contents.map(({ title, id }) => (
+              <Article
+                key={title}
+                id={id}
+                title={title}
+                handleWaypoint={handleWaypoint(id)}
+              />
+            ))}
           </div>
         </div>
-      </Fragment>
-    )
-  }
+      </div>
+    </Fragment>
+  )
 }
