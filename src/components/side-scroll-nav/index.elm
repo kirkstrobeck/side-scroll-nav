@@ -13,7 +13,7 @@ import Html.Styled.Events exposing (onClick)
 import Maybe exposing (withDefault)
 
 
-main : Program Model Model Msg
+main : Program InputModel Model Msg
 main =
     Html.programWithFlags
         { init = init
@@ -29,10 +29,15 @@ type alias Nav =
     }
 
 
+type alias InputModel =
+    { contents : List Nav
+    , containerClassName : Maybe String
+    , wrapperId : String
+    }
 
--- type Foo value
---     = Just value
---     | Nothing
+
+
+-- https://stackoverflow.com/questions/52574049/define-type-alias-with-a-partial-definition-or-default
 
 
 type alias Model =
@@ -42,9 +47,14 @@ type alias Model =
     }
 
 
-init : Model -> ( Model, Cmd Msg )
+modelWithDefaults : InputModel -> Model
+modelWithDefaults input =
+    { input | containerClassName = withDefault "" input.containerClassName }
+
+
+init : InputModel -> ( Model, Cmd Msg )
 init reactProps =
-    ( reactProps, Cmd.none )
+    ( modelWithDefaults reactProps, Cmd.none )
 
 
 type alias ElmToReactMsg =
@@ -55,7 +65,7 @@ type alias ElmToReactMsg =
 
 type Msg
     = ReactUpdate Model
-    | Foo ElmToReactMsg
+    | ElmToReactSender ElmToReactMsg
 
 
 theme =
@@ -71,7 +81,7 @@ update msg model =
         ReactUpdate model ->
             ( model, Cmd.none )
 
-        Foo obj ->
+        ElmToReactSender obj ->
             ( model, elmToReact obj )
 
 
@@ -94,9 +104,6 @@ view { contents, containerClassName, wrapperId } =
             , position fixed
             , top (px 0)
             , width (pct 100)
-
-            -- , property "backface-visibility" "hidden"
-            -- , transform (translate3d zero zero zero)
             , before
                 [ property "content" "''"
                 , height (px 50)
@@ -186,7 +193,7 @@ view { contents, containerClassName, wrapperId } =
                                         ]
                                     ]
                                 , onClick
-                                    (Foo
+                                    (ElmToReactSender
                                         (ElmToReactMsg "scrollTo" item.id)
                                     )
                                 , class "active"
