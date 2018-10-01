@@ -1,28 +1,10 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Component } from 'react'
 
 import { Main } from './index.elm'
 import ElmWrapper from '../helpers/elm-wrapper'
 
 // component
-
-SideScrollNav.propTypes = {
-  containerClassName: PropTypes.string,
-  contents: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired
-    })
-  ).isRequired,
-  scrollTopOffset: PropTypes.number,
-  store: PropTypes.object.isRequired,
-  wrapperId: PropTypes.string
-}
-
-SideScrollNav.defaultProps = {
-  scrollTopOffset: 0,
-  wrapperId: 'side-scroll-nav'
-}
 
 function scrollToWithDefaults ({ element = window, top = 0, left = 0 }) {
   element.scrollTo({
@@ -32,52 +14,90 @@ function scrollToWithDefaults ({ element = window, top = 0, left = 0 }) {
   })
 }
 
-export function SideScrollNav (props) {
-  const { scrollTopOffset, containerClassName } = props
-
-  let blockNavUntil
-  const blockNavTimeout = id => {
-    blockNavUntil = true
-    window.setTimeout(() => {
-      blockNavUntil = id
-      scrollNav(id, true)
-    }, 0)
+export class SideScrollNav extends Component {
+  static propTypes = {
+    containerClassName: PropTypes.string,
+    contents: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired
+      })
+    ).isRequired,
+    scrollTopOffset: PropTypes.number,
+    store: PropTypes.object.isRequired,
+    wrapperId: PropTypes.string
   }
 
-  function navSelector (selector) {
-    return document.querySelector(`#${props.wrapperId} ${selector}`)
+  static defaultProps = {
+    scrollTopOffset: 0,
+    wrapperId: 'side-scroll-nav'
   }
 
-  function scrollNav (id, force) {
+  state = {
+    active: ''
+  }
+
+  componentDidMount () {
+    this.props.store.setScrollEventCallback(this.scrollNav)
+  }
+
+  navSelector = selector => {
+    return document.querySelector(`#${this.props.wrapperId} ${selector}`)
+  }
+
+  scrollNav = (id, force) => {
+    const { containerClassName } = this.props
+    const { blockNavUntil } = this.state
+
     if (blockNavUntil === id || typeof blockNavUntil === 'undefined' || force) {
       if (!force) {
-        blockNavUntil = undefined
+        this.setState({ blockNavUntil: undefined })
       }
 
+      this.setState({ active: id })
+
       scrollToWithDefaults({
-        element: navSelector(`.${containerClassName}[data-scroller]`),
+        element: this.navSelector(`.${containerClassName}[data-scroller]`),
         left:
-          navSelector(`[data-id="${id}"]`).offsetLeft -
-          navSelector(`[data-id]`).offsetLeft
+          this.navSelector(`[data-id="${id}"]`).offsetLeft -
+          this.navSelector(`[data-id]`).offsetLeft
       })
     }
   }
 
-  function scrollContent (id) {
+  scrollContent = id => {
+    const { scrollTopOffset } = this.props
+
     scrollToWithDefaults({
       top: document.querySelector(`#${id}`).offsetTop + scrollTopOffset
     })
   }
 
-  function scrollTo (id) {
-    blockNavTimeout(id)
-    scrollNav(id)
-    scrollContent(id)
+  blockNavTimeout = id => {
+    this.setState({ blockNavUntil: '' })
+    window.setTimeout(() => {
+      this.setState({ blockNavUntil: id })
+      this.scrollNav(id, true)
+    }, 0)
   }
 
-  props.store.setScrollEventCallback(scrollNav)
+  scrollTo = id => {
+    this.blockNavTimeout(id)
+    this.scrollNav(id)
+    this.scrollContent(id)
+  }
 
-  return <ElmWrapper src={Main} listeners={{ scrollTo }} props={props} />
+  render () {
+    const { active } = this.state
+
+    return (
+      <ElmWrapper
+        src={Main}
+        listeners={{ scrollTo: this.scrollTo }}
+        props={{ ...this.props, active }}
+      />
+    )
+  }
 }
 
 // store factory
@@ -108,8 +128,6 @@ export function storeFactory (contentsInit) {
 
       if (position.length) {
         position.sort((a, b) => a.index - b.index)
-      } else {
-        // position.push(contents[contents.length - 1])
       }
 
       if (position.length && scrollEventCallback) {

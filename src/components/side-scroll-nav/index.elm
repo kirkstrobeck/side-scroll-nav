@@ -3,7 +3,7 @@ port module Main exposing (main)
 -- import Dom exposing (..)
 
 import Css exposing (..)
-import Css.Global exposing (withClass)
+import Css.Global exposing (descendants, typeSelector, withClass)
 import Debug exposing (log)
 import Dom.Scroll exposing (toTop)
 import Html exposing (programWithFlags)
@@ -30,14 +30,16 @@ type alias Nav =
 
 
 type alias InputModel =
-    { contents : List Nav
+    { active : String
+    , contents : List Nav
     , containerClassName : Maybe String
     , wrapperId : String
     }
 
 
 type alias Model =
-    { contents : List Nav
+    { active : String
+    , contents : List Nav
     , containerClassName : String
     , wrapperId : String
     }
@@ -65,10 +67,12 @@ type Msg
 
 
 theme =
-    { grey = hex "f5f5f5"
-    , white = hex "ffffff"
+    { blue = hex "0000ff"
+    , blueDark = hex "00008B"
+    , grey = hex "f5f5f5"
+    , greyDark = hex "dfdfdf"
     , red = hex "ff0000"
-    , blue = hex "0000ff"
+    , white = hex "ffffff"
     }
 
 
@@ -93,7 +97,7 @@ subscriptions model =
 
 
 view : Model -> Html Msg
-view { contents, containerClassName, wrapperId } =
+view { active, contents, containerClassName, wrapperId } =
     div
         [ css
             [ height (px 60)
@@ -104,6 +108,7 @@ view { contents, containerClassName, wrapperId } =
                 [ property "content" "''"
                 , height (px 50)
                 , backgroundColor theme.grey
+                , borderBottom3 (px 1) solid theme.greyDark
                 , display block
                 , width (pct 100)
                 , position absolute
@@ -139,6 +144,23 @@ view { contents, containerClassName, wrapperId } =
                     , height (px 40)
                     , whiteSpace noWrap
                     , verticalAlign middle
+                    , descendants
+                        [ typeSelector ".active a"
+                            [ textDecoration none
+                            , before
+                                [ property "content" "''"
+                                , height (px 3)
+                                , width (pct 100)
+                                , display block
+                                , bottom (px 5)
+                                , position absolute
+                                , backgroundColor theme.blue
+                                ]
+                            , hover
+                                [ before [ backgroundColor theme.blueDark ]
+                                ]
+                            ]
+                        ]
                     ]
                 ]
                 (List.map
@@ -151,6 +173,13 @@ view { contents, containerClassName, wrapperId } =
                                     [ marginLeft (px 0) ]
                                 ]
                             , attribute "data-id" item.id
+                            , class
+                                (if active == item.id then
+                                    "active"
+
+                                 else
+                                    ""
+                                )
                             ]
                             [ a
                                 [ css
@@ -163,36 +192,16 @@ view { contents, containerClassName, wrapperId } =
                                     , textOverflow ellipsis
                                     , maxWidth (px 150)
                                     , position relative
+                                    , color theme.blue
                                     , hover
                                         [ textDecoration none
-                                        , before
-                                            [ property "content" "''"
-                                            , height (px 3)
-                                            , width (pct 100)
-                                            , display block
-                                            , bottom (px 5)
-                                            , position absolute
-                                            , backgroundColor theme.blue
-                                            ]
-                                        ]
-                                    , withClass "active"
-                                        [ textDecoration none
-                                        , before
-                                            [ property "content" "''"
-                                            , height (px 3)
-                                            , width (pct 100)
-                                            , display block
-                                            , bottom (px 6)
-                                            , position absolute
-                                            , backgroundColor theme.blue
-                                            ]
+                                        , color theme.blueDark
                                         ]
                                     ]
                                 , onClick
                                     (ElmToReactSender
                                         (ElmToReactMsg "scrollTo" item.id)
                                     )
-                                , class "active"
                                 ]
                                 [ text item.title ]
                             ]
