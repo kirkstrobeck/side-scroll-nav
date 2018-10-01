@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import Waypoint from 'react-waypoint'
 
-export default ({ id, title, handleWaypoint }) => (
+export default ({ id, title, handleWaypoint = () => {} }) => (
   <Fragment>
     <Waypoint onPositionChange={handleWaypoint} />
     <div id={id}>

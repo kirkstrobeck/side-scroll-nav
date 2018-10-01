@@ -36,10 +36,6 @@ type alias InputModel =
     }
 
 
-
--- https://stackoverflow.com/questions/52574049/define-type-alias-with-a-partial-definition-or-default
-
-
 type alias Model =
     { contents : List Nav
     , containerClassName : String
@@ -186,7 +182,7 @@ view { contents, containerClassName, wrapperId } =
                                             , height (px 3)
                                             , width (pct 100)
                                             , display block
-                                            , bottom (px 5)
+                                            , bottom (px 6)
                                             , position absolute
                                             , backgroundColor theme.blue
                                             ]

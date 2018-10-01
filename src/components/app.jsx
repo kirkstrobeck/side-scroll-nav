@@ -4,9 +4,6 @@ import React, { Fragment } from 'react'
 import Article from './article'
 import { SideScrollNav, storeFactory } from './side-scroll-nav'
 
-const navStore = storeFactory()
-const { handleWaypoint } = navStore
-
 const contents = [
   {
     title: 'Subject One',
@@ -50,6 +47,9 @@ const contents = [
   }
 ]
 
+const navStore = storeFactory(contents)
+const { handleWaypoint } = navStore
+
 export default function App () {
   return (
     <Fragment>
@@ -61,9 +61,9 @@ export default function App () {
           padding: 0 calc(8.3335% + 0.4rem);
         `}
       />
-      <div style={{ marginTop: 65 }} className='container'>
-        <div className='columns'>
-          <div className='column col-10 col-mx-auto'>
+      <div style={{ marginTop: 65 }} className="container">
+        <div className="columns">
+          <div className="column col-10 col-mx-auto">
             {contents.map(({ title, id }) => (
               <Article
                 key={title}
@@ -72,6 +72,7 @@ export default function App () {
                 handleWaypoint={handleWaypoint(id)}
               />
             ))}
+            <Article title="Extra content" />
           </div>
         </div>
       </div>
