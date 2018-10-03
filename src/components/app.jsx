@@ -61,9 +61,9 @@ export default function App () {
           padding: 0 calc(8.3335% + 0.4rem);
         `}
       />
-      <div style={{ marginTop: 65 }} className="container">
-        <div className="columns">
-          <div className="column col-10 col-mx-auto">
+      <div style={{ marginTop: 65 }} className='container'>
+        <div className='columns'>
+          <div className='column col-10 col-mx-auto'>
             {contents.map(({ title, id }) => (
               <Article
                 key={title}
@@ -72,7 +72,7 @@ export default function App () {
                 handleWaypoint={handleWaypoint(id)}
               />
             ))}
-            <Article title="Extra content" />
+            <Article title='Extra content' />
           </div>
         </div>
       </div>

@@ -1,11 +1,4 @@
-# Elm in React
+# React side-scroll nav
 
-Goal: Make a stateless functional component in React that is strictly Elm.
-
-```
-yarn
-
-yarn dev
-
-yarn build && yarn serve
-```
+A horizontal nav implementation that controls and responds to the content
+scroll position.

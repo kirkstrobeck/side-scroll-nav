@@ -1,8 +1,23 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import { Main } from './index.elm'
+import { ElmComponent } from './component.elm'
+import { ElmStoreFactory } from './store-factory.elm'
 import ElmWrapper from '../helpers/elm-wrapper'
+
+const ports = ElmStoreFactory.worker().ports
+
+ports.render.subscribe(console.log)
+
+ports.increment.send(1)
+ports.increment.send(54)
+ports.increment.send(1)
+
+// (node, this.props.flags);
+
+// 		if (typeof this.props.ports !== 'undefined') {
+// 			this.props.ports(app.ports);
+// 		}
 
 // component
 
@@ -16,7 +31,7 @@ function scrollToWithDefaults ({ element = window, top = 0, left = 0 }) {
 
 export class SideScrollNav extends Component {
   static propTypes = {
-    containerClassName: PropTypes.string,
+    containerClassName: PropTypes.string.isRequired,
     contents: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.string.isRequired,
@@ -29,6 +44,7 @@ export class SideScrollNav extends Component {
   }
 
   static defaultProps = {
+    containerClassName: '',
     scrollTopOffset: 0,
     wrapperId: 'side-scroll-nav'
   }
@@ -57,7 +73,9 @@ export class SideScrollNav extends Component {
       this.setState({ active: id })
 
       scrollToWithDefaults({
-        element: this.navSelector(`.${containerClassName}[data-scroller]`),
+        element: this.navSelector(
+          `${containerClassName ? `.${containerClassName}` : ``}[data-scroller]`
+        ),
         left:
           this.navSelector(`[data-id="${id}"]`).offsetLeft -
           this.navSelector(`[data-id]`).offsetLeft
@@ -92,7 +110,7 @@ export class SideScrollNav extends Component {
 
     return (
       <ElmWrapper
-        src={Main}
+        src={ElmComponent}
         listeners={{ scrollTo: this.scrollTo }}
         props={{ ...this.props, active }}
       />

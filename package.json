@@ -1,10 +1,10 @@
 {
   "author": {
     "name": "Contributors",
-    "url": "https://github.com/kirkstrobeck/elm-in-react/graphs/contributors"
+    "url": "https://github.com/kirkstrobeck/side-scroll-nav/graphs/contributors"
   },
   "bugs": {
-    "url": "https://github.com/kirkstrobeck/elm-in-react/issues"
+    "url": "https://github.com/kirkstrobeck/side-scroll-nav/issues"
   },
   "dependencies": {
     "@babel/core": "^7.0.0",
@@ -41,13 +41,13 @@
     "webpack-dev-server": "^3.1.7",
     "webpack-merge": "^4.1.4"
   },
-  "description": "Elm in React example",
-  "homepage": "https://github.com/kirkstrobeck/elm-in-react",
+  "description": "React side-scroll nav",
+  "homepage": "https://github.com/kirkstrobeck/side-scroll-nav",
   "license": "Apache-2.0",
-  "name": "elm-in-react",
+  "name": "side-scroll-nav",
   "repository": {
     "type": "git",
-    "url": "git@github.com:kirkstrobeck/elm-in-react.git"
+    "url": "git@github.com:kirkstrobeck/side-scroll-nav.git"
   },
   "scripts": {
     "build": "NODE_ENV=PRODUCTION webpack --config config/webpack.js",

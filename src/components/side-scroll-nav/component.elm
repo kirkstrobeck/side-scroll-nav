@@ -1,6 +1,4 @@
-port module Main exposing (main)
-
--- import Dom exposing (..)
+port module ElmComponent exposing (main)
 
 import Css exposing (..)
 import Css.Global exposing (descendants, typeSelector, withClass)
@@ -13,7 +11,17 @@ import Html.Styled.Events exposing (onClick)
 import Maybe exposing (withDefault)
 
 
-main : Program InputModel Model Msg
+theme =
+    { blue = hex "0000ff"
+    , blueDark = hex "00008B"
+    , grey = hex "f5f5f5"
+    , greyDark = hex "dfdfdf"
+    , red = hex "ff0000"
+    , white = hex "ffffff"
+    }
+
+
+main : Program Model Model Msg
 main =
     Html.programWithFlags
         { init = init
@@ -29,14 +37,6 @@ type alias Nav =
     }
 
 
-type alias InputModel =
-    { active : String
-    , contents : List Nav
-    , containerClassName : Maybe String
-    , wrapperId : String
-    }
-
-
 type alias Model =
     { active : String
     , contents : List Nav
@@ -45,14 +45,9 @@ type alias Model =
     }
 
 
-modelWithDefaults : InputModel -> Model
-modelWithDefaults input =
-    { input | containerClassName = withDefault "" input.containerClassName }
-
-
-init : InputModel -> ( Model, Cmd Msg )
+init : Model -> ( Model, Cmd Msg )
 init reactProps =
-    ( modelWithDefaults reactProps, Cmd.none )
+    ( reactProps, Cmd.none )
 
 
 type alias ElmToReactMsg =
@@ -64,16 +59,6 @@ type alias ElmToReactMsg =
 type Msg
     = ReactUpdate Model
     | ElmToReactSender ElmToReactMsg
-
-
-theme =
-    { blue = hex "0000ff"
-    , blueDark = hex "00008B"
-    , grey = hex "f5f5f5"
-    , greyDark = hex "dfdfdf"
-    , red = hex "ff0000"
-    , white = hex "ffffff"
-    }
 
 
 update msg model =
